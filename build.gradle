@@ -21,7 +21,7 @@ targetCompatibility = 1.7
 dependencies {
     compile  "org.embulk:embulk-core:0.7.4"
     provided "org.embulk:embulk-core:0.7.4"
-    compile 'icu:icu4j:2.6.1'
+    compile 'com.ibm.icu:icu4j:56.1'
     testCompile "junit:junit:4.+"
 }
 
