@@ -137,7 +137,12 @@ public class Icu4jFilterPlugin implements FilterPlugin
                         Map<String, String> setting = settings.get(i);
                         String suffix = setting.get("suffix");
                         Column outputColumn = outputSchema.lookupColumn(column.getName() + MoreObjects.firstNonNull(suffix, ""));
-                        builder.setString(outputColumn, convert(column, suffix, setting.get("case"), transliterators.get(i)));
+                        String convert = convert(column, suffix, setting.get("case"), transliterators.get(i));
+                        if (convert == null) {
+                            builder.setNull(outputColumn);
+                        } else {
+                            builder.setString(outputColumn, convert);
+                        }
                     }
                 }
             }
