@@ -58,7 +58,7 @@ Gem::Specification.new do |spec|
   spec.version       = "${project.version}"
   spec.authors       = ["toyama0919"]
   spec.summary       = %[Icu4j filter plugin for Embulk]
-  spec.description   = %[Icu4j filter plugin for Embulk]
+  spec.description   = %[Icu4j filter plugin for Embulk. see http://site.icu-project.org/]
   spec.email         = ["toyama0919@gmail.com"]
   spec.licenses      = ["MIT"]
   spec.homepage      = "https://github.com/toyama0919/embulk-filter-icu4j"
