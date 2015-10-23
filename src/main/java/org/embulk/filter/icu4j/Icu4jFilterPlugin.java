@@ -89,67 +89,57 @@ public class Icu4jFilterPlugin implements FilterPlugin
 
         return new PageOutput() {
             private PageReader reader = new PageReader(inputSchema);
+            private PageBuilder builder = new PageBuilder(Exec.getBufferAllocator(), outputSchema, output);
 
             @Override
             public void finish() {
-                output.finish();
+                builder.finish();
             }
 
             @Override
             public void close() {
-                output.close();
+                builder.close();
             }
 
             @Override
             public void add(Page page) {
                 reader.setPage(page);
-
-                try (final PageBuilder builder = new PageBuilder(Exec.getBufferAllocator(), outputSchema, output)) {
-                    while (reader.nextRecord()) {
-                        setValue(builder);
-                        builder.addRecord();
-                    }
-                    builder.finish();
-                }
-            }
-
-            /**
-             * @param builder
-             */
-            private void setValue(PageBuilder builder) {
-                if (task.getKeepInput()) {
-                    for (Column inputColumn: inputSchema.getColumns()) {
-                        if (reader.isNull(inputColumn)) {
-                            builder.setNull(inputColumn);
-                            continue;
-                        }
-                        if (Types.STRING.equals(inputColumn.getType())) {
-                            builder.setString(inputColumn, reader.getString(inputColumn));
-                        } else if (Types.BOOLEAN.equals(inputColumn.getType())) {
-                            builder.setBoolean(inputColumn, reader.getBoolean(inputColumn));
-                        } else if (Types.DOUBLE.equals(inputColumn.getType())) {
-                            builder.setDouble(inputColumn, reader.getDouble(inputColumn));
-                        } else if (Types.LONG.equals(inputColumn.getType())) {
-                            builder.setLong(inputColumn, reader.getLong(inputColumn));
-                        } else if (Types.TIMESTAMP.equals(inputColumn.getType())) {
-                            builder.setTimestamp(inputColumn, reader.getTimestamp(inputColumn));
+                while (reader.nextRecord()) {
+                    if (task.getKeepInput()) {
+                        for (Column inputColumn: inputSchema.getColumns()) {
+                            if (reader.isNull(inputColumn)) {
+                                builder.setNull(inputColumn);
+                                continue;
+                            }
+                            if (Types.STRING.equals(inputColumn.getType())) {
+                                builder.setString(inputColumn, reader.getString(inputColumn));
+                            } else if (Types.BOOLEAN.equals(inputColumn.getType())) {
+                                builder.setBoolean(inputColumn, reader.getBoolean(inputColumn));
+                            } else if (Types.DOUBLE.equals(inputColumn.getType())) {
+                                builder.setDouble(inputColumn, reader.getDouble(inputColumn));
+                            } else if (Types.LONG.equals(inputColumn.getType())) {
+                                builder.setLong(inputColumn, reader.getLong(inputColumn));
+                            } else if (Types.TIMESTAMP.equals(inputColumn.getType())) {
+                                builder.setTimestamp(inputColumn, reader.getTimestamp(inputColumn));
+                            }
                         }
                     }
-                }
 
-                List<Map<String, String>> settings = task.getSettings();
-                for (Column column : keyNameColumns) {
-                    for (int i = 0; i < settings.size(); i++) {
-                        Map<String, String> setting = settings.get(i);
-                        String suffix = setting.get("suffix");
-                        Column outputColumn = outputSchema.lookupColumn(column.getName() + MoreObjects.firstNonNull(suffix, ""));
-                        String convert = convert(column, suffix, setting.get("case"), transliterators.get(i));
-                        if (convert == null) {
-                            builder.setNull(outputColumn);
-                        } else {
-                            builder.setString(outputColumn, convert);
+                    List<Map<String, String>> settings = task.getSettings();
+                    for (Column column : keyNameColumns) {
+                        for (int i = 0; i < settings.size(); i++) {
+                            Map<String, String> setting = settings.get(i);
+                            String suffix = setting.get("suffix");
+                            Column outputColumn = outputSchema.lookupColumn(column.getName() + MoreObjects.firstNonNull(suffix, ""));
+                            String convert = convert(column, suffix, setting.get("case"), transliterators.get(i));
+                            if (convert == null) {
+                                builder.setNull(outputColumn);
+                            } else {
+                                builder.setString(outputColumn, convert);
+                            }
                         }
                     }
+                    builder.addRecord();
                 }
             }
 
