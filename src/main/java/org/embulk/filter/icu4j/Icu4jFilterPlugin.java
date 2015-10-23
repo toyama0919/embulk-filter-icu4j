@@ -55,8 +55,14 @@ public class Icu4jFilterPlugin implements FilterPlugin
 
         for (String key: task.getKeyNames()) {
             for (Map<String, String> setting : task.getSettings()) {
-                Column outputColumn = new Column(i++, key + MoreObjects.firstNonNull(setting.get("suffix"), ""), Types.STRING);
-                builder.add(outputColumn);
+                String keyName = key + MoreObjects.firstNonNull(setting.get("suffix"), "");
+                if (task.getKeepInput()) {
+                    if (setting.get("suffix") != null) {
+                        builder.add(new Column(i++, keyName, Types.STRING));
+                    }
+                } else {
+                    builder.add(new Column(i++, keyName, Types.STRING));
+                }
             }
         }
         Schema outputSchema = new Schema(builder.build());
