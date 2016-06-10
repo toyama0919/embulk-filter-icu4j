@@ -24,6 +24,8 @@ dependencies {
     provided "org.embulk:embulk-core:0.8.9"
     compile 'com.ibm.icu:icu4j:56.1'
     testCompile "junit:junit:4.+"
+    testCompile "org.embulk:embulk-core:0.8.9:tests"
+    testCompile "org.embulk:embulk-standards:0.8.9"
 }
 
 task classpath(type: Copy, dependsOn: ["jar"]) {
