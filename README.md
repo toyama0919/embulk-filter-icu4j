@@ -1,5 +1,7 @@
 # Icu4j filter plugin for Embulk
 
+Unicode normalize string value.
+
 Icu4j filter plugin for Embulk.
 see. http://site.icu-project.org/
 
