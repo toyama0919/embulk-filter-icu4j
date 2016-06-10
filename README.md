@@ -16,6 +16,17 @@ see. http://site.icu-project.org/
     - **transliterators**: transliterator IDS(comma separated). see http://hondou.homedns.org/pukiwiki/pukiwiki.php?Java%20ICU4J. (string)
     - **case**: upper or lower (string, default: null)
 
+## Example normalize NFKC
+
+```yaml
+filters:
+  - type: icu4j
+    key_names:
+      - title
+    settings:
+      - { transliterators: 'Any-NFKC', case: upper }
+```
+
 ## Example
 
 ```yaml
