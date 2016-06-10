@@ -121,6 +121,8 @@ public class Icu4jFilterPlugin implements FilterPlugin
                                 builder.setLong(inputColumn, reader.getLong(inputColumn));
                             } else if (Types.TIMESTAMP.equals(inputColumn.getType())) {
                                 builder.setTimestamp(inputColumn, reader.getTimestamp(inputColumn));
+                            } else if (Types.JSON.equals(inputColumn.getType())) {
+                                builder.setJson(inputColumn, reader.getJson(inputColumn));
                             }
                         }
                     }
